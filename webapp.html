@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trail Finder - Joe Grant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #8B4513;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #6B3410;
+            padding: 30px;
+            border-radius: 12px;
+        }
+        h1 {
+            text-align: center;
+            color: #FFD700;
+        }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ddd;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            font-size: 16px;
+            background-color: #fff;
+            color: #333;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 14px;
+            background-color: #FFD700;
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #FFC200;
+        }
+        .result {
+            margin-top: 25px;
+            background-color: #5C2A00;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .result h2 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        .trail-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .trail-detail {
+            margin: 8px 0;
+            color: #eee;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚵 Southern Utah Trail Finder</h1>
+    <p class="subtitle">Answer a few questions and find your perfect trail!</p>
+
+    <label for="skill">Your Skill Level:</label>
+    <select id="skill">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+        <option value="expert">Expert</option>
+    </select>
+
+    <label for="vibe">What kind of ride are you looking for?</label>
+    <select id="vibe">
+        <option value="flowy">Fast & Flowy</option>
+        <option value="technical">Technical & Challenging</option>
+        <option value="scenic">Scenic & Relaxed</option>
+        <option value="big">Big Features & Drops</option>
+    </select>
+
+    <label for="time">How much time do you have?</label>
+    <select id="time">
+        <option value="short">1-2 hours</option>
+        <option value="half">Half day (3-4 hours)</option>
+        <option value="full">Full day (5+ hours)</option>
+    </select>
+
+    <button onclick="findTrail()">Find My Trail! 🔍</button>
+
+    <div class="result" id="result">
+        <h2>Your Recommended Trail:</h2>
+        <div class="trail-name" id="trailName"></div>
+        <div class="trail-detail" id="trailDifficulty"></div>
+        <div class="trail-detail" id="trailDesc"></div>
+        <div class="trail-detail" id="trailTime"></div>
+        <div class="trail-detail" id="trailTip"></div>
+    </div>
+
+    <a href="scratch.html" class="back-link">← Back to Hobbies Page</a>
+</div>
+
+<script>
+    const trails = {
+        beginner: {
+            flowy: { name: "Gooseberry Mesa - Outer Loop", difficulty: "⭐ Easy/Moderate", desc: "Smooth dirt trail with amazing views of Zion National Park.", time: "2-3 hours", tip: "Go in the morning to avoid heat!" },
+            technical: { name: "JEM Trail", difficulty: "⭐⭐ Moderate", desc: "Fun singletrack with some rocky sections. Great for building skills.", time: "1-2 hours", tip: "Bring plenty of water." },
+            scenic: { name: "Hurricane Rim - North Section", difficulty: "⭐ Easy", desc: "Stunning canyon views with mostly smooth terrain.", time: "1-2 hours", tip: "Sunset rides here are incredible." },
+            big: { name: "JEM Trail", difficulty: "⭐⭐ Moderate", desc: "Start here before moving to bigger trails. Good for confidence building.", time: "1-2 hours", tip: "Don't rush — build skills first!" }
+        },
+        intermediate: {
+            flowy: { name: "Hurricane Rim - Full Loop", difficulty: "⭐⭐ Moderate", desc: "Fast, flowy singletrack with incredible canyon views all the way through.", time: "2-3 hours", tip: "Great trail to work on speed and flow." },
+            technical: { name: "Gooseberry Mesa - Technical Loop", difficulty: "⭐⭐⭐ Hard", desc: "Slickrock navigation, ledges, and technical features with epic scenery.", time: "3-5 hours", tip: "Tire pressure matters a lot on slickrock!" },
+            scenic: { name: "Gooseberry Mesa - Outer Loop", difficulty: "⭐⭐ Moderate", desc: "Perfect mix of scenery and riding. Views of Zion throughout.", time: "2-3 hours", tip: "Best in spring and fall." },
+            big: { name: "Barrel Roll", difficulty: "⭐⭐⭐ Hard", desc: "Progressive features and drops. A great step up trail.", time: "2-3 hours", tip: "Scope features before sending them!" }
+        },
+        advanced: {
+            flowy: { name: "Hurricane Rim - Full Send", difficulty: "⭐⭐⭐ Hard", desc: "Pin it on the fast sections and enjoy the flow state.", time: "2-3 hours", tip: "Full suspension recommended." },
+            technical: { name: "Gooseberry Mesa - Full Loop", difficulty: "⭐⭐⭐⭐ Very Hard", desc: "The full experience — slickrock, exposure, technical moves, and stunning views.", time: "4-6 hours", tip: "Go with someone who knows the route." },
+            scenic: { name: "Gooseberry Mesa - Rim Trail", difficulty: "⭐⭐⭐ Hard", desc: "Exposed rim riding with jaw-dropping views into the canyon.", time: "3-4 hours", tip: "Don't go alone and watch the exposure." },
+            big: { name: "The Ledges - St. George", difficulty: "⭐⭐⭐⭐ Very Hard", desc: "Big moves and technical rock features. Not for the faint of heart.", time: "3-5 hours", tip: "Full protection gear recommended." }
+        },
+        expert: {
+            flowy: { name: "Hurricane Rim - Strava KOM Attempt", difficulty: "⭐⭐⭐⭐⭐ Expert", desc: "You know what to do. Full send, find the flow.", time: "2 hours", tip: "Check your bike the night before." },
+            technical: { name: "Gooseberry Mesa - Everything", difficulty: "⭐⭐⭐⭐⭐ Expert", desc: "Link every technical line, skip no feature. The full mesa experience.", time: "5-7 hours", tip: "Bring extra tubes and snacks." },
+            scenic: { name: "Zion Traverse (Gravel)", difficulty: "⭐⭐⭐⭐ Very Hard", desc: "Epic backcountry riding through Zion country.", time: "Full day", tip: "Plan logistics carefully." },
+            big: { name: "Red Bull Rampage Zone - Hurricane", difficulty: "⭐⭐⭐⭐⭐ Expert", desc: "Ride where the pros ride. Massive exposure, huge features.", time: "3-5 hours", tip: "Know your limits. Seriously." }
+        }
+    };
+
+    function findTrail() {
+        const skill = document.getElementById('skill').value;
+        const vibe = document.getElementById('vibe').value;
+        const trail = trails[skill][vibe];
+
+        document.getElementById('trailName').textContent = trail.name;
+        document.getElementById('trailDifficulty').textContent = '🎯 Difficulty: ' + trail.difficulty;
+        document.getElementById('trailDesc').textContent = '📍 ' + trail.desc;
+        document.getElementById('trailTime').textContent = '⏱️ Estimated Time: ' + trail.time;
+        document.getElementById('trailTip').textContent = '💡 Pro Tip: ' + trail.tip;
+
+        const result = document.getElementById('result');
+        result.style.display = 'block';
+        result.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
